@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ILK SEO Audit — 2026-03-10</title>
+<style>
+  :root {
+    --slate: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --bg: #f8fafc;
+    --critical: #fef2f2;
+    --critical-border: #fca5a5;
+    --critical-text: #991b1b;
+    --high: #fff7ed;
+    --high-border: #fdba74;
+    --high-text: #9a3412;
+    --medium: #fefce8;
+    --medium-border: #fde047;
+    --medium-text: #854d0e;
+    --low: #f0fdf4;
+    --low-border: #86efac;
+    --low-text: #166534;
+    --blue: #eff6ff;
+    --blue-border: #93c5fd;
+    --green: #f0fdf4;
+    --accent: #0f766e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color: var(--slate); background: var(--bg); line-height: 1.5; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+  h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.35rem; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); color: var(--accent); }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 0.75rem; color: var(--slate); }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; }
+  .meta { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; font-size: 0.9rem; }
+  .meta-item { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; }
+  .meta-label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; font-size: 1.1rem; }
+
+  /* Score card */
+  .score-card { background: white; border: 2px solid var(--critical-border); border-radius: 12px; padding: 2rem; text-align: center; margin: 2rem 0; }
+  .score-number { font-size: 4rem; font-weight: 800; color: var(--critical-text); }
+  .score-band { font-size: 1.2rem; color: var(--critical-text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+  .score-bar { height: 12px; background: #e5e7eb; border-radius: 6px; margin: 1rem auto; max-width: 400px; overflow: hidden; }
+  .score-fill { height: 100%; width: 31%; background: linear-gradient(90deg, #dc2626, #f87171); border-radius: 6px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  th { background: var(--slate); color: white; text-align: left; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; position: sticky; top: 0; }
+  td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover { background: #f1f5f9; }
+  .total-row { background: var(--slate) !important; color: white; font-weight: 700; }
+  .total-row:hover { background: var(--slate) !important; }
+
+  /* Severity badges */
+  .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-critical { background: var(--critical); color: var(--critical-text); border: 1px solid var(--critical-border); }
+  .badge-high { background: var(--high); color: var(--high-text); border: 1px solid var(--high-border); }
+  .badge-medium { background: var(--medium); color: var(--medium-text); border: 1px solid var(--medium-border); }
+  .badge-low { background: var(--low); color: var(--low-text); border: 1px solid var(--low-border); }
+  .badge-phase1 { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+  .badge-phase2 { background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; }
+  .badge-phase3 { background: #fefce8; color: #854d0e; border: 1px solid #fde047; }
+  .badge-phase4 { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; }
+  .badge-phase5 { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+  .badge-phase6 { background: #faf5ff; color: #6b21a8; border: 1px solid #c4b5fd; }
+  .status-badge { background: var(--medium); color: var(--medium-text); border: 1px solid var(--medium-border); }
+
+  /* Row coloring */
+  .row-critical { background: var(--critical); }
+  .row-high { background: var(--high); }
+  .row-medium { background: var(--medium); }
+  .row-low { background: var(--low); }
+  .row-blue { background: var(--blue); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; margin: 2rem 0 0; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+  .tab { padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 600; font-size: 0.85rem; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
+  .tab:hover { color: var(--accent); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; padding: 1.5rem 0; }
+  .tab-content.active { display: block; }
+
+  /* Projection chart */
+  .projection-bar { display: flex; align-items: center; gap: 0.75rem; margin: 0.4rem 0; }
+  .projection-label { width: 90px; font-size: 0.8rem; font-weight: 600; text-align: right; flex-shrink: 0; }
+  .projection-track { flex: 1; height: 28px; background: #e5e7eb; border-radius: 4px; overflow: hidden; position: relative; }
+  .projection-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.75rem; font-weight: 700; color: white; transition: width 0.5s; }
+  .fill-critical { background: linear-gradient(90deg, #dc2626, #f87171); }
+  .fill-poor { background: linear-gradient(90deg, #ea580c, #fb923c); }
+  .fill-fair { background: linear-gradient(90deg, #ca8a04, #facc15); color: #854d0e !important; }
+  .fill-good { background: linear-gradient(90deg, #16a34a, #4ade80); }
+
+  /* Yellow highlight for action items */
+  .yellow-cell { background: #fef9c3 !important; }
+
+  /* Print */
+  @media print {
+    .tabs { display: none; }
+    .tab-content { display: block !important; page-break-before: always; }
+    .score-card { border-color: #999; }
+    body { font-size: 10pt; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container { padding: 1rem; }
+    table { font-size: 0.75rem; }
+    td, th { padding: 0.5rem; }
+    .meta { flex-direction: column; gap: 0.5rem; }
+    .tab { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>SEO Health Report: ILK</h1>
+<p class="subtitle">ilk.co.in — Full Audit with Implementation Plan</p>
+
+<div class="meta">
+  <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">2026-03-10</div></div>
+  <div class="meta-item"><div class="meta-label">Platform</div><div class="meta-value">Shopify</div></div>
+  <div class="meta-item"><div class="meta-label">Stores</div><div class="meta-value">Khan Market, Hyderabad</div></div>
+  <div class="meta-item"><div class="meta-label">Price Range</div><div class="meta-value">₹23,500 – ₹49,000+</div></div>
+  <div class="meta-item"><div class="meta-label">Framework</div><div class="meta-value">Luma v2</div></div>
+</div>
+
+<div class="score-card">
+  <div class="score-number">27<span style="font-size:1.5rem;color:#64748b">/100</span></div>
+  <div class="score-band">Critical</div>
+  <div class="score-bar"><div class="score-fill" style="width:27%"></div></div>
+</div>
+
+<!-- Category Breakdown -->
+<table>
+  <tr><th>Category</th><th>Raw Score</th><th>Weight</th><th>Weighted</th><th>Key Issue</th></tr>
+  <tr class="row-high"><td>Crawlability & Indexation</td><td>62</td><td>25%</td><td>15.5</td><td>Contact page 404, no breadcrumbs, no hub pages</td></tr>
+  <tr class="row-critical"><td>Technical Foundations</td><td>22</td><td>20%</td><td>4.4</td><td>No canonical, no identity stitching, duplicate Meta Pixels, no funnel tracking, no LocalBusiness schema</td></tr>
+  <tr class="row-critical"><td>On-Page SEO</td><td>18</td><td>25%</td><td>4.5</td><td>Zero meta descriptions, missing H1s, no image alt on collections</td></tr>
+  <tr class="row-critical"><td>Content Quality & E-E-A-T</td><td>22</td><td>20%</td><td>4.4</td><td>~85 word descriptions, zero collection copy, no FAQ</td></tr>
+  <tr class="row-critical"><td>Authority & Trust</td><td>8</td><td>10%</td><td>0.8</td><td>No reviews, no rating schema, press buried, no local SEO</td></tr>
+  <tr style="background:#f8fafc"><td>GEO Bonus</td><td>+0</td><td>—</td><td>+0</td><td>No LLMs.txt, no FAQ schema, no direct answers</td></tr>
+  <tr class="total-row"><td>TOTAL</td><td></td><td></td><td>27</td><td></td></tr>
+</table>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('findings')">Findings (46)</div>
+  <div class="tab" onclick="showTab('plan')">Implementation Plan</div>
+  <div class="tab" onclick="showTab('keywords')">Keyword Mapping</div>
+  <div class="tab" onclick="showTab('projection')">Score Projection</div>
+  <div class="tab" onclick="showTab('blog')">Blog Calendar</div>
+  <div class="tab" onclick="showTab('metrics')">Success Metrics</div>
+</div>
+
+<!-- TAB: Findings -->
+<div id="findings" class="tab-content active">
+<h2>All Findings</h2>
+<table>
+<tr><th>#</th><th>Issue</th><th>Category</th><th>Severity</th><th>Confidence</th><th>Evidence</th><th>Score Impact</th><th>Recommendation</th></tr>
+<tr class="row-high"><td>1</td><td>Contact page returns 404</td><td>Crawlability</td><td><span class="badge badge-high">High</span></td><td>High</td><td>/pages/contact-us and /pages/contact both 404</td><td>-10</td><td>Create contact page with addresses, phone, email, map for both stores</td></tr>
+<tr class="row-medium"><td>2</td><td>FAQ page returns 404</td><td>Crawlability</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>/pages/faq returns 404</td><td>-5</td><td>Create FAQ page with FAQPage schema</td></tr>
+<tr class="row-high"><td>3</td><td>No breadcrumb navigation on any page</td><td>Crawlability</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Confirmed missing on PDP, collection, homepage</td><td>-8</td><td>Add breadcrumbs: Home → Collection → Product</td></tr>
+<tr class="row-medium"><td>4</td><td>No BreadcrumbList schema</td><td>Crawlability</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>No BreadcrumbList @type found</td><td>-5</td><td>Add BreadcrumbList JSON-LD</td></tr>
+<tr class="row-low"><td>5</td><td>Collection URL handle mismatch — "Love Stories" at /collections/women</td><td>Crawlability</td><td><span class="badge badge-low">Low</span></td><td>High</td><td>URL doesn't match displayed content</td><td>-3</td><td>Rename to keyword-relevant handle</td></tr>
+<tr class="row-medium"><td>6</td><td>No hub/pillar pages for topic clusters</td><td>Crawlability</td><td><span class="badge badge-medium">Medium</span></td><td>Medium</td><td>No hub pages linking to supporting content</td><td>-2.5</td><td>Create hub pages for key categories</td></tr>
+<tr class="row-critical"><td>7</td><td>Canonical tags not confirmed on any page</td><td>Technical</td><td><span class="badge badge-critical">Critical</span></td><td>Medium</td><td>WebFetch couldn't confirm on homepage, PDPs, or collections</td><td>-7.5</td><td>Verify in theme.liquid; add if missing</td></tr>
+<tr class="row-medium"><td>8</td><td>OG tags inconsistent — present on some PDPs, missing on others</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>Purple Eve: present. Beam Yellow: not found</td><td>-5</td><td>Add OG tags to theme template</td></tr>
+<tr class="row-medium"><td>9</td><td>No Twitter Card tags</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>Not found on any page</td><td>-3</td><td>Add twitter:card meta tags</td></tr>
+<tr class="row-high"><td>10</td><td>No Organization schema</td><td>Technical</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Only WebSite schema found</td><td>-10</td><td>Add Organization JSON-LD</td></tr>
+<tr class="row-high"><td>11</td><td>No LocalBusiness schema for 2 physical stores</td><td>Technical</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Khan Market + Hyderabad stores exist, zero schema</td><td>-10</td><td>Add ClothingStore JSON-LD per location</td></tr>
+<tr class="row-medium"><td>12</td><td>Product schema missing AggregateRating</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>No review data in Product JSON-LD</td><td>-5</td><td>Install review app + add AggregateRating</td></tr>
+<tr class="row-medium"><td>13</td><td>No FAQ schema</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>No FAQ page, no FAQ blocks on PDPs</td><td>-3</td><td>Create FAQ content + FAQPage schema</td></tr>
+<tr class="row-high"><td>14</td><td>Heavy third-party JavaScript</td><td>Technical</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Clarity, FB Pixel, GA, currency converter</td><td>-7</td><td>Defer Clarity, lazy-load FB Pixel</td></tr>
+<tr class="row-medium"><td>15</td><td>No preload/prefetch for critical assets</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>No preload for hero images or fonts</td><td>-3</td><td>Add preload directives</td></tr>
+<tr class="row-low"><td>16</td><td>No hreflang tags despite multi-currency</td><td>Technical</td><td><span class="badge badge-low">Low</span></td><td>High</td><td>Currency selector present, no hreflang</td><td>-2</td><td>Add hreflang if targeting international</td></tr>
+<tr class="row-low"><td>17</td><td>WebSite schema uses http:// context</td><td>Technical</td><td><span class="badge badge-low">Low</span></td><td>High</td><td>"@context": "http://schema.org"</td><td>-1</td><td>Change to https://schema.org</td></tr>
+<tr class="row-critical"><td>18</td><td>NO meta descriptions on ANY page</td><td>On-Page</td><td><span class="badge badge-critical">Critical</span></td><td>High</td><td>Confirmed missing on 10+ pages tested</td><td>-20</td><td>Write unique 150-160 char descriptions</td></tr>
+<tr class="row-high"><td>19</td><td>Homepage title missing or generic</td><td>On-Page</td><td><span class="badge badge-high">High</span></td><td>Medium</td><td>Likely just "ILK"</td><td>-5</td><td>Set keyword-rich homepage title</td></tr>
+<tr class="row-medium"><td>20</td><td>Collection titles inconsistent quality</td><td>On-Page</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>Co-ord Set excellent; Dress, Bestseller generic</td><td>-5</td><td>Replicate Co-ord Set format</td></tr>
+<tr class="row-high"><td>21</td><td>No H1 on any collection page</td><td>On-Page</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Missing on Dress, Love Stories, Bestseller, Co-ord Set</td><td>-10</td><td>Add semantic H1 to collection template</td></tr>
+<tr class="row-critical"><td>22</td><td>No image alt text on collection product cards</td><td>On-Page</td><td><span class="badge badge-critical">Critical</span></td><td>High</td><td>Empty alt, filenames like IMG_0195.jpg</td><td>-15</td><td>Add alt: product.title + product.type</td></tr>
+<tr class="row-high"><td>23</td><td>All PDP images use identical alt text</td><td>On-Page</td><td><span class="badge badge-high">High</span></td><td>High</td><td>4 images all "Purple Eve Dress"</td><td>-8</td><td>Unique alt per image (front, back, detail)</td></tr>
+<tr class="row-medium"><td>24</td><td>Image filenames non-descriptive</td><td>On-Page</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>IMG_0208.jpg, ILK-CS-39B.jpg</td><td>-3</td><td>Rename to descriptive filenames</td></tr>
+<tr class="row-high"><td>25</td><td>No related products on PDPs</td><td>On-Page</td><td><span class="badge badge-high">High</span></td><td>High</td><td>"Not present" on both tested PDPs</td><td>-8</td><td>Add Shopify recommendations section</td></tr>
+<tr class="row-medium"><td>26</td><td>No cross-collection linking on PDPs</td><td>On-Page</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>Only nav-level links, no contextual links</td><td>-3</td><td>Add "Also see" links in descriptions</td></tr>
+<tr class="row-critical"><td>27</td><td>Product descriptions ~85 words average</td><td>Content</td><td><span class="badge badge-critical">Critical</span></td><td>High</td><td>Purple Eve: 85 words</td><td>-15</td><td>Expand to 250+ words per product</td></tr>
+<tr class="row-critical"><td>28</td><td>Zero collection page content</td><td>Content</td><td><span class="badge badge-critical">Critical</span></td><td>High</td><td>All collections: product grid only</td><td>-15</td><td>Write 200-400 word descriptions</td></tr>
+<tr class="row-high"><td>29</td><td>No FAQ page (404)</td><td>Content</td><td><span class="badge badge-high">High</span></td><td>High</td><td>/pages/faq returns 404</td><td>-8</td><td>Create FAQ page + PDP FAQ blocks</td></tr>
+<tr class="row-medium"><td>30</td><td>No blog in primary navigation</td><td>Content</td><td><span class="badge badge-medium">Medium</span></td><td>Medium</td><td>Blog sitemap exists but nav link missing</td><td>-2.5</td><td>Add blog to nav, publish 2-4/month</td></tr>
+<tr class="row-high"><td>31</td><td>No contact page damages E-E-A-T</td><td>Content</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Both contact URLs 404</td><td>-8</td><td>Create contact page with store details</td></tr>
+<tr class="row-medium"><td>32</td><td>Product codes as URLs (ILK-CS-30)</td><td>Content</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>/products/ilk-cs-30</td><td>-3</td><td>Rename to descriptive slugs</td></tr>
+<tr class="row-critical"><td>33</td><td>No customer reviews on any product</td><td>Authority</td><td><span class="badge badge-critical">Critical</span></td><td>High</td><td>No review app integrated</td><td>-25</td><td>Install Judge.me + post-purchase emails</td></tr>
+<tr class="row-high"><td>34</td><td>No AggregateRating in schema</td><td>Authority</td><td><span class="badge badge-high">High</span></td><td>High</td><td>No rating data in Product JSON-LD</td><td>-10</td><td>Review app auto-adds rating schema</td></tr>
+<tr class="row-medium"><td>35</td><td>No trust badges or certifications</td><td>Authority</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>No handcraft/sustainability badges</td><td>-5</td><td>Add relevant certifications</td></tr>
+<tr class="row-high"><td>36</td><td>Press/awards buried on About page only</td><td>Authority</td><td><span class="badge badge-high">High</span></td><td>High</td><td>LFW, ELLE, Grazia on /pages/our-story only</td><td>-10</td><td>Create Press page + homepage bar</td></tr>
+<tr class="row-high"><td>37</td><td>No Google Business Profile verifiable</td><td>Authority</td><td><span class="badge badge-high">High</span></td><td>High</td><td>Contact 404, no NAP on site</td><td>-10</td><td>Claim + verify GBP for both stores</td></tr>
+<tr class="row-low"><td>38</td><td>No local directory citations</td><td>Authority</td><td><span class="badge badge-medium">Medium</span></td><td>Low</td><td>Cannot verify externally</td><td>-1.25</td><td>Create Justdial, Google Maps listings</td></tr>
+<tr class="row-low"><td>39</td><td>Social links but no UGC integration</td><td>Authority</td><td><span class="badge badge-low">Low</span></td><td>High</td><td>Instagram in footer, no embedded feed</td><td>-3</td><td>Add Instagram feed / UGC gallery</td></tr>
+<tr class="row-medium"><td>40</td><td>No backlink strategy from stockists</td><td>Authority</td><td><span class="badge badge-medium">Medium</span></td><td>Medium</td><td>Sold on Ogaan, Aza, Elan — no reciprocal links</td><td>-5</td><td>Request brand page backlinks</td></tr>
+<tr class="row-high" style="background:#e0e7ff"><td>41</td><td>No identity stitching — customer ID not passed to GA4 or Clarity</td><td>Technical</td><td><span class="badge badge-high">High</span></td><td>High</td><td>"customer": null at page load. No {% if customer %} block in theme.liquid. Every logged-in session treated as anonymous.</td><td>-5</td><td>Add 10-line Liquid snippet to theme.liquid: pass customer.id to gtag + clarity('set')</td></tr>
+<tr class="row-medium" style="background:#e0e7ff"><td>42</td><td>Duplicate Meta Pixels — 2 pixel IDs firing</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>Pixel 852315356111917 + 1046506826621624 both fire on every page. Likely Pratiksha's + Kashish's ad accounts.</td><td>-3</td><td>Identify active pixel, remove stale one. Use Meta Pixel Helper to verify.</td></tr>
+<tr class="row-medium" style="background:#e0e7ff"><td>43</td><td>No end-to-end funnel tracked in single tool</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>GA4 has events but no funnel exploration. Data siloed across GA4 + GoKwik + Meta.</td><td>-5</td><td>Set up GA4 Funnel Exploration: session_start → view_item → add_to_cart → begin_checkout → purchase</td></tr>
+<tr class="row-medium" style="background:#e0e7ff"><td>44</td><td>No abandoned cart email sequence beyond Shopify default</td><td>Technical</td><td><span class="badge badge-medium">Medium</span></td><td>High</td><td>GoKwik handles checkout. Shopify sends basic abandoned emails. No behavioral 3-step sequence (1hr/24hr/72hr).</td><td>-3</td><td>Install Klaviyo free tier. Set up 3-email cart abandonment flow. Est. recovery: 3-7 extra purchases/month at ₹52K AOV.</td></tr>
+<tr class="row-low" style="background:#e0e7ff"><td>45</td><td>No early email capture before checkout</td><td>Technical</td><td><span class="badge badge-low">Low</span></td><td>High</td><td>No popup, newsletter, or "notify me". Only way to get email is at checkout — too late for most visitors.</td><td>-2</td><td>Add Klaviyo popup: "Get 10% off first order". Identifies anonymous visitors sooner.</td></tr>
+<tr class="row-high" style="background:#e0e7ff"><td>46</td><td>No WhatsApp commerce integration</td><td>Authority</td><td><span class="badge badge-high">High</span></td><td>High</td><td>No WhatsApp chat button on site, no "Ask on WhatsApp" on PDPs. At ₹28-50K price point, Indian D2C converts through conversation.</td><td>—</td><td>Add WhatsApp Business button to PDPs + floating chat. Free via wa.me link or Interakt/DelightChat free tier.</td></tr>
+</table>
+</div>
+
+<!-- TAB: Implementation Plan -->
+<div id="plan" class="tab-content">
+<h2>Implementation Plan</h2>
+
+<h3>Phase 1: Foundation Fixes <span class="badge badge-phase1">Week 1-2</span></h3>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>Where (Shopify)</th><th>How</th><th>Owner</th><th>Effort</th><th>Dependencies</th><th>Validates When</th><th>Score Impact</th></tr>
+<tr class="row-critical"><td>1.1</td><td>Create Contact Page</td><td>Admin → Pages → Add</td><td>Create page "Contact" with handle "contact". Add: Khan Market address, Hyderabad address, phone, email, Google Maps embed. Add to footer nav.</td><td>Founder</td><td>2h</td><td>None</td><td>ilk.co.in/pages/contact returns 200</td><td>+14 total</td></tr>
+<tr class="row-critical"><td>1.2</td><td>Verify & Fix Canonical Tags</td><td>Themes → Edit code → theme.liquid</td><td>View source → search rel="canonical". If missing, add &lt;link rel="canonical" href="{{ canonical_url }}" /&gt; in &lt;head&gt;</td><td>Developer</td><td>1h</td><td>None</td><td>View source on 3 page types shows canonical</td><td>+7.5 Technical</td></tr>
+<tr class="row-critical"><td>1.3</td><td>Meta Descriptions — Top 20 Products</td><td>Admin → Products → SEO section</td><td>Write 150-160 char: "[Fabric] [garment] with [technique]. [Feature]. Handcrafted in India. Shop at ILK."</td><td>Content Writer</td><td>4h</td><td>None</td><td>GSC URL Inspection shows meta</td><td>+10 On-Page</td></tr>
+<tr class="row-critical"><td>1.4</td><td>Meta Descriptions — All Collections</td><td>Admin → Collections → SEO</td><td>Write 150-160 char per collection with category keyword.</td><td>Content Writer</td><td>2h</td><td>None</td><td>View source shows meta tag</td><td>+5 On-Page</td></tr>
+<tr class="row-critical"><td>1.5</td><td>Fix Homepage Title Tag</td><td>Admin → Online Store → Preferences</td><td>Set: "ILK — Handcrafted Silk & Cotton Clothing for Women | Dresses, Co-ords & More"</td><td>Founder</td><td>5min</td><td>None</td><td>&lt;title&gt; matches in source</td><td>+5 On-Page</td></tr>
+<tr class="row-critical"><td>1.6</td><td>Add OG + Twitter Card Tags</td><td>Themes → Edit code → theme.liquid</td><td>Add og:title, og:description, og:image, twitter:card using Liquid variables. Test with Facebook Debugger.</td><td>Developer</td><td>2h</td><td>Meta descriptions first (1.3, 1.4)</td><td>FB Debugger shows correct preview</td><td>+5 Technical</td></tr>
+</table>
+
+<h3>Phase 1B: Analytics & Tracking Setup <span class="badge badge-phase1">Week 1-2 (parallel)</span></h3>
+<p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.75rem">All tools free. Total effort: ~7.5 hours. Total cost: ₹0.</p>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>Tool (Free)</th><th>How</th><th>Owner</th><th>Effort</th><th>Validates When</th><th>Impact</th></tr>
+<tr style="background:#e0e7ff"><td>1B.1</td><td>Identity Stitching — Link Customers to GA4 & Clarity</td><td>GA4 + Clarity (existing)</td><td>Add {% if customer %} block to theme.liquid: pass customer.id to gtag('set','user_properties') + clarity('set','userId'). Hash email with MD5.</td><td>Developer</td><td>30min</td><td>GA4 DebugView shows user_id for logged-in session</td><td>+5 Technical</td></tr>
+<tr style="background:#e0e7ff"><td>1B.2</td><td>Resolve Duplicate Meta Pixels</td><td>Meta Business Manager</td><td>Ask Pratiksha which pixel is active. Check if 2nd is Kashish's. Remove stale pixel from Shopify Customer Events.</td><td>Pratiksha + Dev</td><td>1h</td><td>Meta Pixel Helper shows 1 pixel per page</td><td>+3 Technical</td></tr>
+<tr style="background:#e0e7ff"><td>1B.3</td><td>Set Up GA4 Funnel Exploration</td><td>GA4</td><td>Explore → Funnel: session_start → view_item → add_to_cart → begin_checkout → purchase. Breakdown by device + source.</td><td>Founder</td><td>1h</td><td>Funnel shows data within 48 hours</td><td>+5 Technical</td></tr>
+<tr style="background:#e0e7ff"><td>1B.4</td><td>Install Klaviyo — Abandoned Cart Sequences</td><td>Klaviyo (free ≤500)</td><td>Install from App Store. Enable 3-email cart flow (1hr/24hr/72hr). Enable browse abandonment flow.</td><td>Founder</td><td>3h</td><td>First abandoned cart email sends within 24h</td><td>+3 Technical<br>Est: ₹1.5-2L/mo recovered</td></tr>
+<tr style="background:#e0e7ff"><td>1B.5</td><td>Add Email Capture Popup</td><td>Klaviyo (free)</td><td>Create popup: "Get 10% off first order". Trigger after 15s or exit intent. Collect email only.</td><td>Founder</td><td>1h</td><td>Popup appears in incognito after 15s</td><td>+2 Technical</td></tr>
+<tr style="background:#e0e7ff"><td>1B.6</td><td>Baseline Metrics Snapshot</td><td>GA4 + GSC</td><td>Record: organic sessions, top 10 landing pages, conversion rate by channel, indexed pages, avg position, top queries.</td><td>Founder</td><td>1h</td><td>Spreadsheet saved with today's date</td><td>Measurement baseline</td></tr>
+</table>
+
+<h3>Phase 2: On-Page & Content <span class="badge badge-phase2">Week 2-4</span></h3>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>Where</th><th>How</th><th>Owner</th><th>Effort</th><th>Dependencies</th><th>Validates When</th><th>Score Impact</th></tr>
+<tr class="row-high"><td>2.1</td><td>Add H1 to Collection Template</td><td>collection.liquid</td><td>Wrap collection title in &lt;h1&gt;. Ensure keyword-rich.</td><td>Developer</td><td>1h</td><td>None</td><td>View source: &lt;h1&gt; on collections</td><td>+10 On-Page</td></tr>
+<tr class="row-high"><td>2.2</td><td>Add Breadcrumbs + Schema</td><td>product.liquid + collection.liquid</td><td>Add breadcrumb HTML + BreadcrumbList JSON-LD</td><td>Developer</td><td>3h</td><td>None</td><td>Rich Results Test: breadcrumbs valid</td><td>+8 Crawl, +5 Tech</td></tr>
+<tr class="row-high"><td>2.3</td><td>Fix Collection Image Alt Text</td><td>product-card snippet</td><td>Set alt to {{ product.title }} — {{ product.type }}</td><td>Developer</td><td>1h</td><td>None</td><td>View source: descriptive alt</td><td>+15 On-Page</td></tr>
+<tr class="row-high"><td>2.4</td><td>Add "You May Also Like" to PDPs</td><td>product template</td><td>Add {% section 'product-recommendations' %}</td><td>Developer</td><td>2h</td><td>None</td><td>Related products visible on PDPs</td><td>+5 On-Page, +3 Crawl</td></tr>
+<tr class="row-high"><td>2.5</td><td>Meta Descriptions — Remaining ~80 Products</td><td>Admin → Products</td><td>10 products/day for 8 days.</td><td>Content Writer</td><td>16h</td><td>Fix 1.3 template</td><td>All products have meta</td><td>+10 On-Page</td></tr>
+<tr class="row-high"><td>2.6</td><td>Fix Duplicate Image Alt on PDPs</td><td>Admin → Products → Images</td><td>Set unique alt per image (front, back, detail, model). 15/day.</td><td>Content Writer</td><td>14h</td><td>None</td><td>Each image has unique alt</td><td>+8 On-Page</td></tr>
+<tr class="row-high"><td>2.7</td><td>Rename Product Code URLs</td><td>Admin → Products → SEO handle</td><td>Change ILK-CS-30 → descriptive slug. Set 301 redirect.</td><td>SEO Specialist</td><td>2h</td><td>Identify all code URLs</td><td>Old URLs redirect</td><td>+4 total</td></tr>
+</table>
+
+<h3>Phase 3: Content Depth & Expansion <span class="badge badge-phase3">Week 4-8</span></h3>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>Where</th><th>How</th><th>Owner</th><th>Effort</th><th>Score Impact</th></tr>
+<tr class="row-medium"><td>3.1</td><td>Expand Product Descriptions to 250+ Words</td><td>Admin → Products → Description</td><td>Template: Design Story (50-70w) + Craft & Fabric (50-70w) + Fit & Styling (40-60w) + Care (30-40w) + Details. 5/day.</td><td>Content Writer</td><td>40h</td><td>+10 Content</td></tr>
+<tr class="row-medium"><td>3.2</td><td>Write Collection Page Descriptions</td><td>Admin → Collections → Description</td><td>200-300 words per collection. Opening + details + craft story paragraphs.</td><td>Content Writer</td><td>8h</td><td>+15 Content</td></tr>
+<tr class="row-medium"><td>3.3</td><td>Create FAQ Page</td><td>Admin → Pages → Add "FAQ"</td><td>15-20 questions on shipping, returns, sizing, care. Add FAQPage JSON-LD.</td><td>CW + Dev</td><td>6h</td><td>+5 Content, +2 GEO</td></tr>
+<tr class="row-medium"><td>3.4</td><td>Launch Blog — First 4 Articles</td><td>Admin → Blog posts</td><td>Silk Chanderi Guide, Smocking Techniques, Styling Co-ords, Sustainable Fashion India. 800-1200w each.</td><td>Content Writer</td><td>24h</td><td>+3 Content</td></tr>
+</table>
+
+<h3>Phase 4: Technical & Schema <span class="badge badge-phase4">Week 4-8</span></h3>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>Where</th><th>How</th><th>Owner</th><th>Effort</th><th>Score Impact</th></tr>
+<tr class="row-blue"><td>4.1</td><td>Add Organization Schema</td><td>theme.liquid</td><td>Organization JSON-LD: name, url, logo, founders, foundingDate, sameAs, contactPoint</td><td>Developer</td><td>1h</td><td>+10 Technical</td></tr>
+<tr class="row-blue"><td>4.2</td><td>Add ClothingStore Schema — Both Stores</td><td>theme.liquid or contact page</td><td>ClothingStore JSON-LD for Khan Market (28.6008, 77.2272) + Hyderabad</td><td>Developer</td><td>2h</td><td>+10 Technical</td></tr>
+<tr class="row-blue"><td>4.3</td><td>Defer Heavy Third-Party Scripts</td><td>theme.liquid</td><td>Clarity → DOMContentLoaded. FB Pixel → lazy. Currency converter → defer.</td><td>Developer</td><td>3h</td><td>+5 Technical</td></tr>
+<tr class="row-blue"><td>4.4</td><td>Add Preload for Hero + Fonts</td><td>theme.liquid &lt;head&gt;</td><td>&lt;link rel="preload"&gt; for hero image + font. font-display: swap.</td><td>Developer</td><td>1h</td><td>+3 Technical</td></tr>
+<tr class="row-blue"><td>4.5</td><td>Fix WebSite Schema Context</td><td>theme.liquid</td><td>Change http://schema.org → https://schema.org</td><td>Developer</td><td>5min</td><td>+1 Technical</td></tr>
+</table>
+
+<h3>Phase 5: Authority & Off-Page <span class="badge badge-phase5">Month 2-6</span></h3>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>How</th><th>Owner</th><th>Effort</th><th>Score Impact</th></tr>
+<tr class="row-low"><td>5.1</td><td>Install Judge.me + Review Flow</td><td>Install free tier. Post-purchase email at day 7. 10% off for photo reviews. Target: 50 in 90 days.</td><td>Founder + Dev</td><td>4h</td><td>+25 Authority</td></tr>
+<tr class="row-low"><td>5.2</td><td>Create Press Page + "As Featured In"</td><td>List ELLE, Grazia, LFW with links. Add logo bar to homepage.</td><td>CW + Dev</td><td>4h</td><td>+10 Authority</td></tr>
+<tr class="row-low"><td>5.3</td><td>Claim Google Business Profile</td><td>Claim Khan Market + Hyderabad. Verify. Add hours, photos, categories.</td><td>Founder</td><td>3h</td><td>+10 Authority</td></tr>
+<tr class="row-low"><td>5.4</td><td>Request Backlinks from Stockists</td><td>Contact Ogaan, Aza, Elan for brand page links. Pitch ELLE, Grazia for editorial.</td><td>Marketing</td><td>6h</td><td>+5 Authority</td></tr>
+<tr class="row-low"><td>5.5</td><td>Add Instagram UGC to Homepage</td><td>Install Instafeed app. Add "As Worn By" section.</td><td>Developer</td><td>2h</td><td>+3 Authority</td></tr>
+</table>
+
+<h3>Phase 6: AI/GEO Readiness <span class="badge badge-phase6">Month 3-6</span></h3>
+<table>
+<tr><th>Fix #</th><th>Fix</th><th>How</th><th>Owner</th><th>Effort</th><th>Score Impact</th></tr>
+<tr><td>6.1</td><td>Add FAQ Blocks to PDPs</td><td>Collapsible FAQ with 3-5 Qs per product. Add FAQPage schema.</td><td>Dev + CW</td><td>8h</td><td>+2 GEO</td></tr>
+<tr><td>6.2</td><td>Add Direct Answer Blocks</td><td>Concise &lt;120 word summaries on collections + about page.</td><td>Content Writer</td><td>3h</td><td>+1 GEO</td></tr>
+<tr><td>6.3</td><td>Create LLMs.txt</td><td>Host at ilk.co.in/llms.txt with brand info + permissions.</td><td>Developer</td><td>30min</td><td>+1 GEO</td></tr>
+</table>
+</div>
+
+<!-- TAB: Keyword Mapping -->
+<div id="keywords" class="tab-content">
+<h2>Keyword Mapping</h2>
+<table>
+<tr><th>Page</th><th>Primary Keyword</th><th>Secondary Keywords</th><th>Intent</th><th>Current Title</th><th style="background:#b45309;color:white">Recommended Title</th><th>Current Meta</th><th style="background:#b45309;color:white">Recommended Meta</th><th style="background:#b45309;color:white">Recommended H1</th></tr>
+<tr><td>Homepage /</td><td>handcrafted clothing for women India</td><td>silk dresses, cotton co-ord sets, designer Indian clothing</td><td>Nav + Trans</td><td>ILK (generic)</td><td class="yellow-cell">ILK — Handcrafted Silk & Cotton Clothing for Women | Dresses, Co-ords & More</td><td>Missing</td><td class="yellow-cell">Handcrafted silk and cotton clothing for women. Dresses, co-ord sets, tops with smocking & threadwork. Designed in India. Shop ILK.</td><td class="yellow-cell">Handcrafted Clothing Rooted in Detail</td></tr>
+<tr><td>Dresses /collections/dress</td><td>handcrafted silk dresses for women</td><td>cotton dresses online India, designer midi dresses</td><td>Transactional</td><td>Dress – ILK</td><td class="yellow-cell">Handcrafted Silk & Cotton Dresses for Women | ILK</td><td>Missing</td><td class="yellow-cell">Handcrafted silk chanderi and cotton dresses. Smocking, appliqué & threadwork. Designed in India. Shop ILK dresses.</td><td class="yellow-cell">Handcrafted Silk & Cotton Dresses</td></tr>
+<tr><td>Co-ords /collections/co-ord-set</td><td>designer co-ord sets for women</td><td>matching sets online India</td><td>Transactional</td><td style="background:#d4edda">Designer Co-ord Sets... ✓ KEEP</td><td style="background:#d4edda">Already excellent — keep</td><td>Missing</td><td class="yellow-cell">Designer co-ord sets handcrafted in silk and cotton. Matching tops, pants & skirts. Shop ILK co-ords.</td><td class="yellow-cell">Designer Co-ord Sets for Women</td></tr>
+<tr><td>Bestseller /collections/bestseller</td><td>bestselling handcrafted clothing</td><td>popular silk dresses India</td><td>Transactional</td><td>Bestseller – ILK</td><td class="yellow-cell">Bestselling Handcrafted Clothing for Women | ILK</td><td>Missing</td><td class="yellow-cell">ILK's most-loved handcrafted pieces. Bestselling silk dresses, co-ord sets and tops. Made in India.</td><td class="yellow-cell">Our Bestsellers</td></tr>
+<tr><td>Love Stories /collections/women</td><td>women's handcrafted clothing India</td><td>silk clothing, artisan fashion</td><td>Transactional</td><td>Love Stories – ILK</td><td class="yellow-cell">Women's Handcrafted Silk & Cotton Clothing | ILK</td><td>Missing</td><td class="yellow-cell">ILK's Love Stories. Handcrafted silk and cotton clothing — dresses, co-ords, sarees and more.</td><td class="yellow-cell">Love Stories Collection</td></tr>
+<tr><td>Product (template)</td><td>[Fabric] [Garment] for women</td><td>[Color] [Technique] [Garment]</td><td>Transactional</td><td style="background:#d4edda">Good format ✓</td><td style="background:#d4edda">Keep current format</td><td>Missing</td><td class="yellow-cell">[Fabric] [garment] with [technique]. [Feature]. Handcrafted in India. Shop at ILK.</td><td style="background:#d4edda">Keep product name</td></tr>
+<tr><td>About /pages/our-story</td><td>ILK clothing brand India</td><td>NIFT designer brand, handcrafted fashion</td><td>Informational</td><td>Our Story – ILK</td><td class="yellow-cell">Our Story — ILK | Handcrafted Fashion from India</td><td>Missing</td><td class="yellow-cell">ILK: handcrafted clothing brand by NIFT alumni, est. 2011. Dreamy, whimsical fashion. Khan Market, New Delhi.</td><td class="yellow-cell">Our Story</td></tr>
+</table>
+</div>
+
+<!-- TAB: Score Projection -->
+<div id="projection" class="tab-content">
+<h2>Score Projection: 27 → 88</h2>
+
+<div style="max-width:700px;margin:1.5rem 0">
+  <div class="projection-bar"><div class="projection-label">Current</div><div class="projection-track"><div class="projection-fill fill-critical" style="width:27%">27</div></div></div>
+  <div class="projection-bar"><div class="projection-label">Phase 1+1B</div><div class="projection-track"><div class="projection-fill fill-poor" style="width:50%">50</div></div></div>
+  <div class="projection-bar"><div class="projection-label">Phase 2</div><div class="projection-track"><div class="projection-fill fill-fair" style="width:62%">62</div></div></div>
+  <div class="projection-bar"><div class="projection-label">Phase 3</div><div class="projection-track"><div class="projection-fill fill-fair" style="width:72%">72</div></div></div>
+  <div class="projection-bar"><div class="projection-label">Phase 4</div><div class="projection-track"><div class="projection-fill fill-good" style="width:76%">76</div></div></div>
+  <div class="projection-bar"><div class="projection-label">Phase 5</div><div class="projection-track"><div class="projection-fill fill-good" style="width:85%">85</div></div></div>
+  <div class="projection-bar"><div class="projection-label">Phase 6</div><div class="projection-track"><div class="projection-fill fill-good" style="width:88%">88</div></div></div>
+</div>
+
+<table>
+<tr><th>Phase</th><th>Timeline</th><th>Score</th><th>Delta</th><th>Key Driver</th><th>Crawl</th><th>Technical</th><th>On-Page</th><th>Content</th><th>Authority</th><th>GEO</th></tr>
+<tr class="row-critical"><td>Current</td><td>Now</td><td><strong>27</strong></td><td>—</td><td>Baseline (analytics gaps added)</td><td>62</td><td>22</td><td>18</td><td>22</td><td>8</td><td>0</td></tr>
+<tr class="row-high"><td>Phase 1 + 1B</td><td>Week 2</td><td><strong>50</strong></td><td>+23</td><td>Meta descriptions, contact page, canonical, OG + identity stitching, pixel cleanup, Klaviyo, funnel setup</td><td>67</td><td>52</td><td>38</td><td>26</td><td>13</td><td>0</td></tr>
+<tr class="row-medium"><td>Phase 2</td><td>Week 4</td><td><strong>62</strong></td><td>+12</td><td>H1s, breadcrumbs, image alt, related products</td><td>78</td><td>57</td><td>56</td><td>30</td><td>13</td><td>0</td></tr>
+<tr class="row-medium"><td>Phase 3</td><td>Week 8</td><td><strong>72</strong></td><td>+10</td><td>Descriptions 250+, collection content, blog, FAQ</td><td>80</td><td>60</td><td>58</td><td>60</td><td>15</td><td>2</td></tr>
+<tr class="row-low"><td>Phase 4</td><td>Week 8</td><td><strong>76</strong></td><td>+4</td><td>Organization + LocalBusiness + Breadcrumb schema</td><td>82</td><td>78</td><td>58</td><td>60</td><td>15</td><td>2</td></tr>
+<tr class="row-low"><td>Phase 5</td><td>Month 6</td><td><strong>85</strong></td><td>+9</td><td>Reviews, backlinks, GBP, press page</td><td>82</td><td>80</td><td>63</td><td>62</td><td>68</td><td>2</td></tr>
+<tr class="row-low"><td>Phase 6</td><td>Month 6</td><td><strong>88</strong></td><td>+3</td><td>FAQ schema, direct answers, LLMs.txt</td><td>82</td><td>80</td><td>63</td><td>65</td><td>68</td><td>5</td></tr>
+</table>
+</div>
+
+<!-- TAB: Blog Calendar -->
+<div id="blog" class="tab-content">
+<h2>Blog Content Calendar</h2>
+<table>
+<tr><th>#</th><th>Target Keyword</th><th>Search Intent</th><th>Content Angle</th><th>Internal Links To</th><th>Words</th><th>Priority</th></tr>
+<tr><td>1</td><td>silk chanderi fabric guide</td><td>Informational</td><td>What is silk chanderi, how it's made, care tips</td><td>Dresses + Co-ords using chanderi</td><td>1,200</td><td><span class="badge badge-high">High</span></td></tr>
+<tr><td>2</td><td>smocking embroidery techniques</td><td>Informational</td><td>Types of smocking, ILK's approach, artisan profiles</td><td>Products with smocking</td><td>1,000</td><td><span class="badge badge-high">High</span></td></tr>
+<tr><td>3</td><td>how to style co-ord sets for Indian weddings</td><td>Informational</td><td>Outfit ideas, layering, accessorizing</td><td>Co-ord Set collection</td><td>1,000</td><td><span class="badge badge-high">High</span></td></tr>
+<tr><td>4</td><td>sustainable fashion brands India</td><td>Informational</td><td>ILK's sustainability, slow fashion philosophy</td><td>About page, all collections</td><td>1,200</td><td><span class="badge badge-medium">Medium</span></td></tr>
+<tr><td>5</td><td>handcrafted vs machine made clothing</td><td>Informational</td><td>Quality differences, price justification</td><td>All collections</td><td>1,000</td><td><span class="badge badge-medium">Medium</span></td></tr>
+<tr><td>6</td><td>what to wear to a brunch in Delhi</td><td>Informational</td><td>Seasonal styling, fabric choices, ILK picks</td><td>Dresses, Tops</td><td>800</td><td><span class="badge badge-medium">Medium</span></td></tr>
+<tr><td>7</td><td>caring for silk garments at home</td><td>Informational</td><td>Washing, storing, ironing silk</td><td>All silk products</td><td>800</td><td><span class="badge badge-low">Low</span></td></tr>
+<tr><td>8</td><td>NIFT designer brands you should know</td><td>Informational</td><td>NIFT alumni spotlight, ILK founder story</td><td>About page</td><td>1,000</td><td><span class="badge badge-low">Low</span></td></tr>
+</table>
+</div>
+
+<!-- TAB: Success Metrics -->
+<div id="metrics" class="tab-content">
+<h2>Success Metrics & KPIs</h2>
+<table>
+<tr><th>Metric</th><th>Current (est.)</th><th style="background:#b45309;color:white">90-Day Target</th><th style="background:#b45309;color:white">180-Day Target</th><th>How to Measure</th></tr>
+<tr><td>Organic Traffic</td><td>Unknown</td><td class="yellow-cell">+40%</td><td class="yellow-cell">+80%</td><td>Google Analytics</td></tr>
+<tr><td>Indexed Pages</td><td>Unknown</td><td class="yellow-cell">95% of total</td><td class="yellow-cell">98%</td><td>GSC Index Coverage</td></tr>
+<tr><td>Avg Position (Top 20 KWs)</td><td>Unknown</td><td class="yellow-cell">Top 30</td><td class="yellow-cell">Top 15</td><td>GSC Performance</td></tr>
+<tr><td>SERP Click-Through Rate</td><td>Unknown</td><td class="yellow-cell">3.5%</td><td class="yellow-cell">5%</td><td>GSC Performance</td></tr>
+<tr><td>Core Web Vitals Pass</td><td>Unknown</td><td class="yellow-cell">All pages</td><td class="yellow-cell">Maintain</td><td>PageSpeed Insights</td></tr>
+<tr><td>Products with Star Ratings</td><td>0</td><td class="yellow-cell">20+</td><td class="yellow-cell">All products</td><td>GSC Rich Results</td></tr>
+<tr><td>Customer Reviews</td><td>0</td><td class="yellow-cell">50</td><td class="yellow-cell">150</td><td>Judge.me Dashboard</td></tr>
+<tr><td>Avg Product Description Words</td><td>~85</td><td class="yellow-cell">250+</td><td class="yellow-cell">300+</td><td>Content audit</td></tr>
+<tr><td>Collections with Content</td><td>0%</td><td class="yellow-cell">100%</td><td class="yellow-cell">100%</td><td>Manual check</td></tr>
+<tr><td>Backlinks Acquired</td><td>Unknown</td><td class="yellow-cell">+15</td><td class="yellow-cell">+40</td><td>Ahrefs / GSC</td></tr>
+<tr><td>Google Business Profile</td><td>No</td><td class="yellow-cell">Both verified</td><td class="yellow-cell">Maintained</td><td>GBP Dashboard</td></tr>
+<tr><td>Blog Articles Published</td><td>0</td><td class="yellow-cell">4</td><td class="yellow-cell">8</td><td>Shopify Blog</td></tr>
+<tr style="background:#e0e7ff"><td>Identity Stitching Active</td><td>No</td><td class="yellow-cell">Yes — GA4 + Clarity</td><td class="yellow-cell">Maintained</td><td>GA4 DebugView → user_id present</td></tr>
+<tr style="background:#e0e7ff"><td>Meta Pixels (should be 1)</td><td>2 (duplicate)</td><td class="yellow-cell">1</td><td class="yellow-cell">1</td><td>Meta Pixel Helper</td></tr>
+<tr style="background:#e0e7ff"><td>GA4 Funnel Set Up</td><td>No</td><td class="yellow-cell">Yes — 5-step funnel</td><td class="yellow-cell">Reviewed weekly</td><td>GA4 Explore → Funnel</td></tr>
+<tr style="background:#e0e7ff"><td>Abandoned Cart Recovery Rate</td><td>~0% (Shopify default)</td><td class="yellow-cell">5-10%</td><td class="yellow-cell">10-15%</td><td>Klaviyo Flows dashboard</td></tr>
+<tr style="background:#e0e7ff"><td>Email Subscribers (pre-checkout)</td><td>0</td><td class="yellow-cell">200+</td><td class="yellow-cell">500+</td><td>Klaviyo Lists</td></tr>
+<tr style="background:#e0e7ff"><td>WhatsApp Conversations</td><td>0 (no integration)</td><td class="yellow-cell">Active on PDPs</td><td class="yellow-cell">Tracked conversions</td><td>WhatsApp Business</td></tr>
+</table>
+
+<h3>Monitoring Cadence</h3>
+<table>
+<tr><th>Frequency</th><th>What to Check</th></tr>
+<tr><td>Weekly</td><td>GSC crawl errors, index coverage changes, manual actions</td></tr>
+<tr><td>Bi-weekly</td><td>Organic traffic trends, keyword position movements, new reviews</td></tr>
+<tr><td>Monthly</td><td>Content production progress, blog posts published, descriptions expanded, backlink count</td></tr>
+<tr><td>Quarterly</td><td>Full re-audit using Luma v2 framework, compare scores, adjust plan</td></tr>
+</table>
+</div>
+
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+<footer style="text-align:center;padding:2rem;color:#94a3b8;font-size:0.8rem;border-top:1px solid #e2e8f0;margin-top:3rem">
+  Audit by Luma — GTM Product SEO Strategist · Framework v2 · 2026-03-10
+</footer>
+</body>
+</html>
